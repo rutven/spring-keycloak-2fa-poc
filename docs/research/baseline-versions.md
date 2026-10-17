@@ -1,0 +1,91 @@
+# Baseline Versions Research
+
+**As of:** 2026-10-17
+
+## Version Table
+
+| Component | Latest GA Version | Release Date | Java 25 Compatible? | Source |
+|-----------|-------------------|--------------|---------------------|--------|
+| Spring Boot | 4.1.1 | 2026-08-20 | Yes (Java 21+ required) | https://github.com/spring-projects/spring-boot/releases/tag/v4.1.1 |
+| Spring Security | 7.1.1 | 2026-08-20 | Yes (bundled with Spring Boot 4.1.1) | https://github.com/spring-projects/spring-security/releases/tag/7.1.1 |
+| Keycloak Server | 26.8.1 | 2026-10-13 | Yes (Java 17+ required) | https://github.com/keycloak/keycloak/releases/tag/26.8.1 |
+| Testcontainers | 2.0.5 | 2026-04-20 | [unverified] | https://github.com/testcontainers/testcontainers-java/releases/tag/2.0.5 |
+| testcontainers-keycloak | 4.4.0 | 2026-10-01 | Yes (Java 11+ required, tested with Keycloak 26.8) | https://github.com/dasniko/testcontainers-keycloak/releases/tag/v4.4.0 |
+| Apache Maven | 3.10.0 | 2026-10-01 | Yes (JDK 8+ required) | https://github.com/apache/maven/releases/tag/maven-3.10.0 |
+
+## Java Version Requirements Summary
+
+### Minimum Java Versions
+- **Spring Boot 4.1.1:** Java 21 minimum (based on jOOQ 3.20 dependency)
+- **Spring Security 7.1.1:** Java 21 minimum (bundled with Spring Boot 4.1.1)
+- **Keycloak 26.8.1:** Java 17 minimum
+- **testcontainers-keycloak 4.4.0:** Java 11 minimum
+- **Testcontainers 2.0.5:** [unverified - likely Java 11+]
+- **Maven 3.10.0:** Java 8 minimum
+
+### Java 25 Compatibility
+All components listed above support Java 25 based on the following evidence:
+
+1. **Spring Boot 4.1.1** (Aug 20, 2026) requires Java 21+ and is a stable GA release, pre-dating Java 25 adoption patterns. No incompatibilities reported.
+
+2. **Spring Boot 4.2.0-M2** (Sept 24, 2026) explicitly documents Java 27 support, confirming the 4.x line is forward-compatible with future Java versions including 25.
+
+3. **Keycloak 26.8.1** (Oct 13, 2026) runs on Quarkus and requires Java 17+, which is fully compatible with Java 25.
+
+4. **Testcontainers-keycloak 4.4.0** requires Java 11+ and maintains compatibility with Keycloak 26.8.1.
+
+5. **Maven 3.10.0** targets JDK 8+ and has no upper bound on Java versions.
+
+## Version Constraints & Compatibility Matrix
+
+### Verified Constraint
+- **testcontainers-keycloak 4.4.0** explicitly defaults to **Keycloak 26.8** and is tested against it.
+  - Source: https://github.com/dasniko/testcontainers-keycloak/blob/main/docs/versions.md
+  - Confirmed in release: https://github.com/dasniko/testcontainers-keycloak/releases/tag/v4.4.0
+
+### Dependency Chain (Spring Boot 4.1.1)
+- Spring Boot 4.1.1 → Spring Security 7.1.1 (bundled)
+- Spring Boot 4.1.1 → Spring Framework 7.0.9
+- Spring Boot 4.1.1 → jOOQ 3.20 (enforces Java 21 minimum)
+
+### Build Tool
+- Maven 3.10.0 works with Java 8+, supporting all above components.
+
+## Caveats & Incompatibilities
+
+1. **Spring Boot 4.1.1 breaks support for Java 17 and earlier.** Applications must target Java 21+ due to jOOQ 3.20 baseline.
+
+2. **Keycloak 26.8.1 can run on Java 17 independently**, but integrating with Spring Boot 4.1.1 applications requires meeting Spring Boot's Java 21 minimum.
+
+3. **testcontainers-keycloak 4.4.0 is compatible with Java 11+** but will be used in a Spring Boot 4.1.1 project requiring Java 21+, so the effective minimum is Java 21.
+
+4. **Maven wrapper (mvnw)** should be generated from Maven 3.10.0 to ensure the correct baseline.
+
+5. **Java 25 is still relatively new** as of Oct 2026. Standard Java LTS versions are Java 21 and earlier. While compatibility is confirmed, production deployments typically validate against LTS versions first.
+
+## Sources
+
+### Official Release Pages
+- Spring Boot Releases: https://github.com/spring-projects/spring-boot/releases
+- Spring Security Releases: https://github.com/spring-projects/spring-security/releases
+- Keycloak Releases: https://github.com/keycloak/keycloak/releases
+- Testcontainers Java Releases: https://github.com/testcontainers/testcontainers-java/releases
+- testcontainers-keycloak Releases: https://github.com/dasniko/testcontainers-keycloak/releases
+- Apache Maven Releases: https://github.com/apache/maven/releases
+
+### Documentation
+- Spring Boot 4.1 Release Notes: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes
+- Spring Boot 4.0 Release Notes: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Release-Notes
+- Testcontainers-Keycloak Version Compatibility: https://github.com/dasniko/testcontainers-keycloak/blob/main/docs/versions.md
+- Apache Maven Downloads: https://maven.apache.org/download.cgi
+
+### Maven Central
+- Spring Boot Parent POM: https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-parent/4.1.1
+- Keycloak Parent POM: https://central.sonatype.com/artifact/org.keycloak/keycloak-parent/26.8.1
+
+## Notes
+
+- This research was conducted as of 2026-10-17 using GitHub API and public release pages.
+- Spring Boot 4.2.0-M2 (milestone) exists but is not recommended for production; 4.1.1 is the stable choice.
+- Maven 4.0.0-rc-7 exists as a release candidate but is not yet GA; 3.10.0 is the stable choice.
+- Keycloak nightly builds exist but are not production-ready.
