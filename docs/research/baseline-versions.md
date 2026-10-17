@@ -6,7 +6,7 @@
 
 | Component | Latest GA Version | Release Date | Java 25 Compatible? | Source |
 |-----------|-------------------|--------------|---------------------|--------|
-| Spring Boot | 4.1.1 | 2026-08-20 | Yes (Java 21+ required) | https://github.com/spring-projects/spring-boot/releases/tag/v4.1.1 |
+| Spring Boot | 4.1.1 | 2026-08-20 | Yes (Java 17+ baseline) | https://github.com/spring-projects/spring-boot/releases/tag/v4.1.1 |
 | Spring Security | 7.1.1 | 2026-08-20 | Yes (bundled with Spring Boot 4.1.1) | https://github.com/spring-projects/spring-security/releases/tag/7.1.1 |
 | Keycloak Server | 26.8.1 | 2026-10-13 | Yes (Java 17+ required) | https://github.com/keycloak/keycloak/releases/tag/26.8.1 |
 | Testcontainers | 2.0.5 | 2026-04-20 | [unverified] | https://github.com/testcontainers/testcontainers-java/releases/tag/2.0.5 |
@@ -16,8 +16,8 @@
 ## Java Version Requirements Summary
 
 ### Minimum Java Versions
-- **Spring Boot 4.1.1:** Java 21 minimum (based on jOOQ 3.20 dependency)
-- **Spring Security 7.1.1:** Java 21 minimum (bundled with Spring Boot 4.1.1)
+- **Spring Boot 4.1.1:** Java 17 baseline (Boot 4.x system requirements); Java 25 supported
+- **Spring Security 7.1.1:** managed by Spring Boot 4.1.1 (`spring-security.version` in `spring-boot-dependencies-4.1.1.pom`)
 - **Keycloak 26.8.1:** Java 17 minimum
 - **testcontainers-keycloak 4.4.0:** Java 11 minimum
 - **Testcontainers 2.0.5:** [unverified - likely Java 11+]
@@ -26,7 +26,7 @@
 ### Java 25 Compatibility
 All components listed above support Java 25 based on the following evidence:
 
-1. **Spring Boot 4.1.1** (Aug 20, 2026) requires Java 21+ and is a stable GA release, pre-dating Java 25 adoption patterns. No incompatibilities reported.
+1. **Spring Boot 4.1.1** (Aug 20, 2026) is a stable GA release. No incompatibilities reported with Java 25.
 
 2. **Spring Boot 4.2.0-M2** (Sept 24, 2026) explicitly documents Java 27 support, confirming the 4.x line is forward-compatible with future Java versions including 25.
 
@@ -46,22 +46,22 @@ All components listed above support Java 25 based on the following evidence:
 ### Dependency Chain (Spring Boot 4.1.1)
 - Spring Boot 4.1.1 → Spring Security 7.1.1 (bundled)
 - Spring Boot 4.1.1 → Spring Framework 7.0.9
-- Spring Boot 4.1.1 → jOOQ 3.20 (enforces Java 21 minimum)
+- Spring Boot 4.1.1 manages jOOQ 3.21.7 (optional; not used by this PoC)
 
 ### Build Tool
 - Maven 3.10.0 works with Java 8+, supporting all above components.
 
 ## Caveats & Incompatibilities
 
-1. **Spring Boot 4.1.1 breaks support for Java 17 and earlier.** Applications must target Java 21+ due to jOOQ 3.20 baseline.
+1. ~~Java 21 floor via jOOQ~~ — corrected: jOOQ is an optional managed dependency (3.21.7) and does not set the project's Java baseline.
 
-2. **Keycloak 26.8.1 can run on Java 17 independently**, but integrating with Spring Boot 4.1.1 applications requires meeting Spring Boot's Java 21 minimum.
+2. **Keycloak 26.8.1** runs in its own container; its JVM is independent of the app's Java 25.
 
-3. **testcontainers-keycloak 4.4.0 is compatible with Java 11+** but will be used in a Spring Boot 4.1.1 project requiring Java 21+, so the effective minimum is Java 21.
+3. **testcontainers-keycloak 4.4.0** is compatible with Java 11+; fine on Java 25.
 
 4. **Maven wrapper (mvnw)** should be generated from Maven 3.10.0 to ensure the correct baseline.
 
-5. **Java 25 is still relatively new** as of Oct 2026. Standard Java LTS versions are Java 21 and earlier. While compatibility is confirmed, production deployments typically validate against LTS versions first.
+5. **Java 25 is an LTS release** (Sept 2025). Project targets Java 25.
 
 ## Sources
 
